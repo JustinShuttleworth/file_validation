@@ -1,47 +1,45 @@
-# Python Package Boilerplate
-Making it easy to create a reusable python package hosted on our internal package manager Nexus.
+# File Validation Decorator
+A decorator for validating file types and sizes. If the validation fails, an Exception will be raised and the code will stop before reaching the function you are decorating. A successful validation will execute the function being decorated - business as usual.
 
-![Alt_Text](https://source.unsplash.com/8N6z4yXUkwY)
-
----
-
-## Steps
-### 1. Create your python code inside of src > your_package_name > name_me.py
-### 2. Update setup.cfg in the project root.
-### 3. When you are ready to package your code, [generate your distribution archives](#generating-distribution-archives)
-### 4. Upload to a package manager
-<ul>
-
-#### 4a. [Nexus - Private Packages](#upload-to-nexus): ACV use.
-#### 4b. [PyPi - Public Packages](#upload-to-pypi): For personal projects only.
-</ul>
+![Alt_Text](https://source.unsplash.com/Q9y3LRuuxmg)
 
 ---
 
-## Generating Distribution Archives
-1. `python3 -m pip install --upgrade build`
-2. `python3 -m build`
+## Example Of A Successful File Validation
+```
+from file_validation_decorator.file_validation import file_validation
 
-This command should output a lot of text and once completed should generate two files in the dist directory:
+with open('places_to_go.txt') as file:
+    @file_validation(file, ['txt', 'jpeg'], 10)
+    def test():
+        print('it works')
 
-<ul>
-    dist/<br>
-        <ul>
-        example_package_YOUR_USERNAME_HERE-0.0.1-py3-none-any.whl <br>
-        example_package_YOUR_USERNAME_HERE-0.0.1.tar.gz
-        </ul>
-</ul>
+    test()
+```
 
----
+## Example Of A File That Is Too Large In Size
+The decorator is provided a file size of 0 below and will raise a FileSizeExceeded error.
+```
+from file_validation_decorator.file_validation import file_validation
 
-## Upload To Nexus
-Instructions coming soon...
+with open('places_to_go.txt') as file:
+    @file_validation(file, ['txt', 'jpeg'], 0)
+    def test():
+        print('it works')
 
----
+    test()
+```
 
-## Upload To PyPi
-You will need a [registered account](https://pypi.org/account/register/).
+## Example Of A File Extension That Is Not Allowed
+The example file being uploaded here is a .txt but a text file is not provided in the accepted file extensions list. This will raise a FileTypeNotAllowed error. 
 
-1. `python3 -m pip install --upgrade twine`
-2. `python3 -m twine upload --repository testpypi dist/*`
-3. The terminal will promp you to enter your username and password
+```
+from file_validation_decorator.file_validation import file_validation
+
+with open('places_to_go.txt') as file:
+    @file_validation(file, ['jpeg'], 0)
+    def test():
+        print('it works')
+
+    test()
+```
