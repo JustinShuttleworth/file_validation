@@ -6,28 +6,29 @@ A decorator for validating file types and sizes. If the validation fails, an Exc
 ---
 
 ## Example Of A Successful File Validation
+Successful file validations allow the function that is being decorated to execute. **The first parameter defined in your function needs to be the file object.**
 ```
 from file_validation_decorator.file_validation import file_validation
 
-with open('places_to_go.txt') as file:
-    @file_validation(file, ['txt', 'jpeg'], 10)
-    def test():
-        print('it works')
+@file_validation(accepted_file_extensions=['txt'], accepted_mime_types=['text/plain'])
+def hello(file):
+    print('Hello World!')
 
-    test()
+with open('test.txt', 'r') as file:
+    hello(file)
 ```
 
 ## Example Of A File That Is Too Large In Size
-The decorator is provided a file size of 0 below and will raise a FileSizeExceeded error.
+The decorator is provided a file size of .000001 and will raise a FileSizeExceeded error.
 ```
 from file_validation_decorator.file_validation import file_validation
 
-with open('places_to_go.txt') as file:
-    @file_validation(file, ['txt', 'jpeg'], 0)
-    def test():
-        print('it works')
+@file_validation(accepted_file_extensions=['txt'], max_file_size=.000001)
+def hello(file):
+    print('Hello World!')
 
-    test()
+with open('test.txt', 'r') as file:
+    hello(file)
 ```
 
 ## Example Of A File Extension That Is Not Allowed
@@ -36,10 +37,23 @@ The example file being uploaded here is a .txt but a text file is not provided i
 ```
 from file_validation_decorator.file_validation import file_validation
 
-with open('places_to_go.txt') as file:
-    @file_validation(file, ['jpeg'], 0)
-    def test():
-        print('it works')
+@file_validation(accepted_file_extensions=['jpeg'])
+def hello(file):
+    print('Hello World!')
 
-    test()
+with open('test.txt', 'r') as file:
+    hello(file)
 ```
+
+## Exceptions 
+
+- **FileExtensionNotAllowed** - *Raised when the file's extension is not found in the list of accepted_file_extensions*
+
+
+- **FileTypeNotAllowed** - *Raised when the file's type is not found in the list of accepted_file_types*
+
+
+- **FileMimeTypeNotAllowed** - *Raised when the file's mime type is not found in the list of accepted_mime_types*
+
+
+- **FileSizeExceeded** - *Raised when the file's size is larger than the max_file_size* 
